@@ -1,174 +1,229 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Drawer,
-  AppBar,
-  Toolbar,
-  List,
+  Container,
+  Grid,
+  Paper,
   Typography,
-  Divider,
-  IconButton,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  Tab,
+  Tabs,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
   Card,
   CardContent,
-  Button,
-  Grid,
-  Avatar,
-  TextField,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
-  Person as PersonIcon,
   Work as WorkIcon,
-  Business as BusinessIcon,
-  Email as EmailIcon,
-  Add as AddIcon,
+  Person as PersonIcon,
+  CheckCircle as CheckCircleIcon,
+  Description as DescriptionIcon,
 } from '@mui/icons-material';
+import DashboardSummary from '../../components/company/DashboardSummary';
+import PostJob from '../../components/company/PostJob';
 
-function CompanyDashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [companyInfo] = useState({
-    name: 'Tech Corp',
-    email: 'hr@techcorp.com',
-    industry: 'Technology',
-    avatar: 'https://via.placeholder.com/150',
+const StatCard = ({ title, value, icon, color }) => (
+  <Card
+    elevation={3}
+    sx={{
+      height: '100%',
+      bgcolor: `${color}.light`,
+      transition: 'transform 0.3s ease-in-out',
+      '&:hover': {
+        transform: 'translateY(-5px)',
+        bgcolor: `${color}.main`,
+        '& .MuiTypography-root': { color: 'white' },
+        '& .MuiSvgIcon-root': { color: 'white' },
+      },
+    }}
+  >
+    <CardContent>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        {icon}
+        <Typography variant="h3" component="div">
+          {value}
+        </Typography>
+        <Typography color="text.secondary" variant="h6">
+          {title}
+        </Typography>
+      </Box>
+    </CardContent>
+  </Card>
+);
+
+const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [stats] = useState({
+    totalJobs: 25,
+    totalApplicants: 150,
+    shortlisted: 45,
+    hired: 20,
   });
 
-  const [jobPostings, setJobPostings] = useState([
+  // Dummy data for job applications
+  const [applications] = useState([
     {
       id: 1,
-      position: 'Software Developer Intern',
-      location: 'New York, NY',
-      description: 'Looking for a motivated intern to join our development team...',
-      applicants: 5,
+      position: 'Software Engineer Intern',
+      applicantName: 'John Doe',
+      college: 'ABC Institute of Technology',
+      status: 'Shortlisted',
+      appliedDate: '2024-02-15',
     },
     {
       id: 2,
-      position: 'Data Science Intern',
-      location: 'San Francisco, CA',
-      description: 'Join our data science team to work on exciting projects...',
-      applicants: 3,
+      position: 'Data Analyst Intern',
+      applicantName: 'Jane Smith',
+      college: 'XYZ University',
+      status: 'Under Review',
+      appliedDate: '2024-02-20',
     },
+    {
+      id: 3,
+      position: 'Frontend Developer',
+      applicantName: 'Mike Johnson',
+      college: 'Tech University',
+      status: 'Hired',
+      appliedDate: '2024-02-10',
+    },
+    // Add more dummy data as needed
   ]);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
+  const getStatusChipColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'hired':
+        return 'success';
+      case 'shortlisted':
+        return 'primary';
+      case 'under review':
+        return 'warning';
+      case 'rejected':
+        return 'error';
+      default:
+        return 'default';
+    }
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={toggleSidebar}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Company Dashboard
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Company Dashboard
+      </Typography>
 
-      <Drawer
-        variant="temporary"
-        open={sidebarOpen}
-        onClose={toggleSidebar}
-        sx={{
-          width: 280,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: 280,
-            boxSizing: 'border-box',
-          },
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ overflow: 'auto', p: 2 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-            <Avatar
-              src={companyInfo.avatar}
-              sx={{ width: 80, height: 80, mb: 1 }}
-            />
-            <Typography variant="h6">{companyInfo.name}</Typography>
-          </Box>
-          <Divider />
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <BusinessIcon />
-              </ListItemIcon>
-              <ListItemText primary="Company Profile" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <EmailIcon />
-              </ListItemIcon>
-              <ListItemText primary={companyInfo.email} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <WorkIcon />
-              </ListItemIcon>
-              <ListItemText primary={companyInfo.industry} />
-            </ListItem>
-          </List>
-        </Box>
-      </Drawer>
-
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant="h4">
-            Job Postings
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => console.log('Add new job posting')}
-          >
-            Post New Job
-          </Button>
-        </Box>
-        <Grid container spacing={3}>
-          {jobPostings.map((job) => (
-            <Grid item xs={12} md={6} key={job.id}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" component="div" sx={{ mb: 1 }}>
-                    {job.position}
-                  </Typography>
-                  <Typography color="text.secondary" sx={{ mb: 1 }}>
-                    {job.location}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    {job.description}
-                  </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {job.applicants} Applicants
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      onClick={() => console.log(`View applicants for ${job.position}`)}
-                    >
-                      View Applicants
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+      {/* Statistics Cards */}
+      <Grid container spacing={4} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Total Jobs Posted"
+            value={stats.totalJobs}
+            icon={<WorkIcon sx={{ fontSize: 40, color: 'primary.main' }} />}
+            color="primary"
+          />
         </Grid>
-      </Box>
-    </Box>
-  );
-}
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Total Applicants"
+            value={stats.totalApplicants}
+            icon={<PersonIcon sx={{ fontSize: 40, color: 'secondary.main' }} />}
+            color="secondary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Shortlisted"
+            value={stats.shortlisted}
+            icon={<DescriptionIcon sx={{ fontSize: 40, color: 'warning.main' }} />}
+            color="warning"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Hired"
+            value={stats.hired}
+            icon={<CheckCircleIcon sx={{ fontSize: 40, color: 'success.main' }} />}
+            color="success"
+          />
+        </Grid>
+      </Grid>
 
-export default CompanyDashboard; 
+      {/* Tabs for different views */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={activeTab} onChange={handleTabChange}>
+          <Tab label="All Applications" />
+          <Tab label="Shortlisted" />
+          <Tab label="Post New Job" />
+        </Tabs>
+      </Box>
+
+      {activeTab === 2 ? (
+        <PostJob />
+      ) : (
+        /* Table showing applications */
+        <TableContainer component={Paper} elevation={3}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Position</TableCell>
+                <TableCell>Applicant Name</TableCell>
+                <TableCell>College</TableCell>
+                <TableCell>Applied Date</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {applications
+                .filter(app => 
+                  activeTab === 0 || 
+                  (activeTab === 1 && app.status.toLowerCase() === 'shortlisted')
+                )
+                .map((application) => (
+                  <TableRow key={application.id}>
+                    <TableCell>{application.position}</TableCell>
+                    <TableCell>{application.applicantName}</TableCell>
+                    <TableCell>{application.college}</TableCell>
+                    <TableCell>{application.appliedDate}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={application.status}
+                        color={getStatusChipColor(application.status)}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Chip
+                          label="View Details"
+                          color="primary"
+                          size="small"
+                          onClick={() => {}}
+                          sx={{ cursor: 'pointer' }}
+                        />
+                        <Chip
+                          label="Update Status"
+                          color="secondary"
+                          size="small"
+                          onClick={() => {}}
+                          sx={{ cursor: 'pointer' }}
+                        />
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </Container>
+  );
+};
+
+export default Dashboard; 

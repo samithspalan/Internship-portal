@@ -37,8 +37,24 @@ function Login({ setIsAuthenticated, setUserType }) {
     // Here you would typically make an API call to verify credentials
     // For now, we'll just simulate a successful login
     setIsAuthenticated(true);
-    setUserType(activeTab === 0 ? 'student' : 'company');
-    navigate(activeTab === 0 ? '/student' : '/company');
+    let route = '/student';
+    switch (activeTab) {
+      case 0:
+        setUserType('student');
+        route = '/student';
+        break;
+      case 1:
+        setUserType('company');
+        route = '/company';
+        break;
+      case 2:
+        setUserType('college');
+        route = '/college';
+        break;
+      default:
+        setUserType('student');
+    }
+    navigate(route);
   };
 
   return (
@@ -61,9 +77,12 @@ function Login({ setIsAuthenticated, setUserType }) {
               onChange={handleTabChange}
               centered
               sx={{ mb: 3 }}
+              variant="scrollable"
+              scrollButtons="auto"
             >
               <Tab label="Student Login" />
               <Tab label="Company Login" />
+              <Tab label="College Login" />
             </Tabs>
             <form onSubmit={handleSubmit}>
               <TextField

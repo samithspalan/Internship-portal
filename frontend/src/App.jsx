@@ -4,10 +4,11 @@ import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import StudentDashboard from "./pages/students/dashboard";
 import CompanyDashboard from "./pages/company/dashboard";
+import CollegeDashboard from "./pages/college/dashboard";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userType, setUserType] = useState(null); // 'student' or 'company'
+  const [userType, setUserType] = useState(null); // 'student', 'company', or 'college'
 
   // Protected Route component
   const ProtectedRoute = ({ children, allowedUserType }) => {
@@ -18,6 +19,20 @@ function App() {
       return <Navigate to="/" replace />;
     }
     return children;
+  };
+
+  const getDefaultRoute = () => {
+    if (!isAuthenticated) return "/login";
+    switch (userType) {
+      case "student":
+        return "/student";
+      case "company":
+        return "/company";
+      case "college":
+        return "/college";
+      default:
+        return "/login";
+    }
   };
 
   return (
@@ -60,20 +75,19 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/college"
+          element={
+            <ProtectedRoute allowedUserType="college">
+              <CollegeDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Default Route */}
         <Route
           path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate
-                to={userType === "student" ? "/student" : "/company"}
-                replace
-              />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={<Navigate to={getDefaultRoute()} replace />}
         />
 
         {/* 404 Route */}
